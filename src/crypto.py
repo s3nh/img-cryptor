@@ -46,6 +46,19 @@ class Encryptor(Cryptor):
         
 
     def _encrypt(self)
+        pass
+
+
+class Decryptor(Cryptor):
+
+    def __init__():
+        super().__init__(path)
+
+
+    def _decrypt(self):
+
+        pass
+
 
 
 

@@ -3,8 +3,8 @@ import os
 import re 
 
 def read_key(path):
-    with open(path) as keyfile:
-        _key = keyfile.open()
+    with open(path, 'rb') as keyfile:
+        _key = keyfile.read()
     return _key
 
 def main():

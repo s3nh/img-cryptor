@@ -2,6 +2,9 @@ from Crypto.Cipher import AES
 from Crypto import Random 
 import typing
 from typing import List, Union, Dict, Optional 
+from PIL import Image
+
+
 
 class Cryptor():
 
@@ -17,7 +20,7 @@ class Cryptor():
         self.cipher = self._crt_cipher()
         self.data = self._read_data()
 
-    def _read_data(self):
+    def _read_data(self, ext : str = 'r'):
         """
         Read data (crypted or encrypted)
         """
@@ -33,14 +36,13 @@ class Cryptor():
         _iv = Random.new().read(AES.block_size)
         return _key, _iv
 
-
     def _crt_cipher(self, algo : str = 'AES'):
         _cipher = AES.new(self._key, AES.MODE_CFB, self._iv)
         return _cipher
 
 class Encryptor(Cryptor):
-    def __init__(self, path, outname, create):
-        super().__init__(path, outname, create)
+    def __init__(self, path, outname, create, **kwargs):
+        super().__init__(path, outname, create, **kwargs)
         self.enc_data = self._encrypt()
 
     def _encrypt(self):
@@ -53,12 +55,13 @@ class Encryptor(Cryptor):
 
 class Decryptor(Cryptor):
 
-    def __init__(self, path, outname, create):
-        super().__init__(path, outname, create)
+    def __init__(self, path, outname, create, **kwargs):
+        super().__init__(path, outname, create, **kwargs)
         self.dec_data = self._decrypt()
 
     def _decrypt(self):
         return self.cipher.decrypt(self.data)    
+    
 
     def _write_data(self):
         encfile = open(self.outname, 'wb')

@@ -3,8 +3,7 @@ from Crypto import Random
 import typing
 from typing import List, Union, Dict, Optional 
 from PIL import Image
-
-
+import numpy as np 
 
 class Cryptor():
 
@@ -18,9 +17,12 @@ class Cryptor():
             self._iv = kwargs.get('_iv')
        
         self.cipher = self._crt_cipher()
-        self.data = self._read_data()
 
-    def _read_data(self, ext : str = 'r'):
+    def _read_image(self):
+        in_data = np.asarray( Image.open(self.path) )
+        return in_data
+
+    def _read_data(self):
         """
         Read data (crypted or encrypted)
         """
@@ -43,6 +45,7 @@ class Cryptor():
 class Encryptor(Cryptor):
     def __init__(self, path, outname, create, **kwargs):
         super().__init__(path, outname, create, **kwargs)
+        self.data = self._read_image()
         self.enc_data = self._encrypt()
 
     def _encrypt(self):
@@ -57,6 +60,7 @@ class Decryptor(Cryptor):
 
     def __init__(self, path, outname, create, **kwargs):
         super().__init__(path, outname, create, **kwargs)
+        self.data = self._read_data() 
         self.dec_data = self._decrypt()
 
     def _decrypt(self):
@@ -67,3 +71,8 @@ class Decryptor(Cryptor):
         encfile = open(self.outname, 'wb')
         encfile.write(self.dec_data)
         encfile.close() 
+
+    def _get_numpy(self):
+       return np.frombuffer(self.dec_data, dtype = np.uint8).reshape(kwargs.get('size'))
+    
+    

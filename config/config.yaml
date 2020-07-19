@@ -1,0 +1,7 @@
+IN_PATH : 'examples/example.png'
+OUT_PATH : 'results/example.enc'
+INVERSE_PATH : 'examples/inversed.png'
+IV_PATH : 'keys/_iv.bin'
+KEY_PATH : 'keys/_key.bin'
+
+

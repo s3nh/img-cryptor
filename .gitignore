@@ -3,3 +3,4 @@
 /results/
 /data/
 */__pycache__/
+*.ipynb

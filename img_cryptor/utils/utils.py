@@ -1,8 +1,5 @@
 import Crypto 
-import os 
-import re 
-import typing 
-from src.cfg import CFG
+from ..src.cfg import CFG
 from typing import Dict 
 
 

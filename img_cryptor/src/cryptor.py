@@ -1,5 +1,5 @@
+import Crypto
 import numpy as np 
-import pathlib
 
 from Crypto.Cipher import AES
 from Crypto import Random 
@@ -16,11 +16,11 @@ class Cryptor(object):
         self.path = path 
         self.outname = outname
         if create:
-            self._key, self._iv = self._init_keyiv()
+            self._key, self._iv = self.initialize_keys()
         else:
             self._key = kwargs.get('_key')
             self._iv = kwargs.get('_iv')
-        self.cipher = self._crt_cipher()
+        self.cipher = self.create_cipher()
 
     def read_image(self):
         """Read the image based on path argument
@@ -74,14 +74,14 @@ class Cryptor(object):
         ----------
         _cipher: Any
         """
-        tmp_ciph = getatr(Crypto.Cipher, algo)
+        tmp_ciph = getattr(Crypto.Cipher, algo)
         _cipher = tmp_ciph.new(self._key, AES.MODE_CFB, self._iv)
         return _cipher
 
 class Encryptor(Cryptor):
-    def __init__(self, path, outname, create, **kwargs):
-        super().__init__(path, outname, create, **kwargs)
-        self.data = self._read_image()
+    def __init__(self, path, outname, create):
+        super().__init__(path, outname, create)
+        self.data = self.read_image()
         self.enc_data = self._encrypt()
 
     def _encrypt(self):
@@ -89,9 +89,9 @@ class Encryptor(Cryptor):
 
 class Decryptor(Cryptor):
 
-    def __init__(self, path, outname, create, **kwargs):
-        super().__init__(path, outname, create, **kwargs)
-        self.data = self._read_data() 
+    def __init__(self, path, outname, create):
+        super().__init__(path, outname, create)
+        self.data = self.read_data() 
         self.dec_data = self._decrypt()
 
     def _decrypt(self):

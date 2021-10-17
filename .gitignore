@@ -5,3 +5,4 @@
 /keys/
 */__pycache__/
 *.ipynb
+/example/*

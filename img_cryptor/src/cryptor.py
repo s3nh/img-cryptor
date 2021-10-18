@@ -7,19 +7,21 @@ from typing import Union
 from pathlib import Path
 from PIL import Image
 from typing import TypeVar
+from ..utils.utils import read_key
 
 Rd = TypeVar('Rd')
 
 class Cryptor(object):
 
-    def __init__(self, path : str, outname : str , create: bool = True):
+    def __init__(self, path : str, outname : str , create: bool = True, **kwargs):
         self.path = path 
         self.outname = outname
         if create:
             self._key, self._iv = self.initialize_keys()
         else:
-            self._key = kwargs.get('_key')
-            self._iv = kwargs.get('_iv')
+            self._key = read_key(kwargs.get('_key'))
+            self._iv = read_key(kwargs.get('_iv'))
+
         self.cipher = self.create_cipher()
 
     def read_image(self):
@@ -36,8 +38,9 @@ class Cryptor(object):
         shape: Tuples
             Shape of processed image.
         """
-        in_data = np.asarray( Image.open(self.path) ).tobytes(order = 'C')
-        return in_data
+        in_data = np.asarray( Image.open(self.path) )
+        print(in_data.shape)
+        return in_data.tobytes(order = 'C')
 
     def read_data(self):
         """
@@ -79,7 +82,7 @@ class Cryptor(object):
         return _cipher
 
 class Encryptor(Cryptor):
-    def __init__(self, path, outname, create):
+    def __init__(self, path, outname, create, **kwargs):
         super().__init__(path, outname, create)
         self.data = self.read_image()
         self.enc_data = self._encrypt()
@@ -92,16 +95,16 @@ class Encryptor(Cryptor):
 
 class Decryptor(Cryptor):
 
-    def __init__(self, path, outname, create):
+    def __init__(self, path, outname, create, **kwargs):
         super().__init__(path, outname, create)
         self.data = self.read_data() 
         self.dec_data = self._decrypt()
 
     def __call__(self):
-        raise NotImplementedError
+        return self._get_numpy()
 
     def _decrypt(self):
         return self.cipher.decrypt(self.data)    
 
     def _get_numpy(self):
-       return np.frombuffer(self.dec_data, dtype = np.uint8).reshape()
+       return np.frombuffer(self.dec_data, dtype = np.uint8).reshape(443, 712, 4)

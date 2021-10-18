@@ -36,7 +36,7 @@ class Cryptor(object):
         shape: Tuples
             Shape of processed image.
         """
-        in_data = np.asarray( Image.open(self.path) )
+        in_data = np.asarray( Image.open(self.path) ).tobytes(order = 'C')
         return in_data
 
     def read_data(self):
@@ -84,6 +84,9 @@ class Encryptor(Cryptor):
         self.data = self.read_image()
         self.enc_data = self._encrypt()
 
+    def __call__(self):
+        self.write_data()
+
     def _encrypt(self):
         return self.cipher.encrypt(self.data) 
 
@@ -93,6 +96,9 @@ class Decryptor(Cryptor):
         super().__init__(path, outname, create)
         self.data = self.read_data() 
         self.dec_data = self._decrypt()
+
+    def __call__(self):
+        raise NotImplementedError
 
     def _decrypt(self):
         return self.cipher.decrypt(self.data)    

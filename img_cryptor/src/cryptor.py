@@ -6,7 +6,7 @@ from Crypto import Random
 from typing import Union 
 from pathlib import Path
 from PIL import Image
-from typing import TypeVar
+from typing import TypeVar, Union, Tuple
 from ..utils.utils import read_key
 
 Rd = TypeVar('Rd')
@@ -40,8 +40,8 @@ class Cryptor(object):
             Shape of processed image.
         """
         in_data = np.asarray( Image.open(self.path) )
-        _shape = in_data.shape
-        return in_data.tobytes(order = 'C'), _shape
+        _shape = np.asarray(in_data.shape)
+        return in_data.tobytes(order = 'C'), _shape.tobytes(order = 'C')
 
     def read_data(self):
         """
@@ -52,9 +52,9 @@ class Cryptor(object):
         infile.close()
         return data
 
-    def write_data(self):
-        encfile = open(self.outname, 'wb')
-        encfile.write(self.enc_data)
+    def write_data(outpath: str, data: Any):
+        encfile = open(outpath, 'wb')
+        encfile.write(data)
         encfile.close() 
 
     def initialize_keys(self) -> Union[Rd, Rd]:
@@ -86,29 +86,35 @@ class Encryptor(Cryptor):
     def __init__(self, path, outname, create, **kwargs):
         super().__init__(path, outname, create, **kwargs)
         self.data, self.shape = self.read_image()
-        self.enc_data = self._encrypt()
+        self.enc_data = self._encrypt(data = self.data)
+        self.enc_shape = self._encrypt(data = self.shape)
 
     def __call__(self):
-        self.write_data()
+        self.write_data(data = self.data, outname = outname)
+        self.write_data(data = self.enc_shape, )
 
-    def _encrypt(self):
-        return self.cipher.encrypt(self.data) 
+    def _encrypt(self, data: Union[np.ndarray, Tuple]):
+        return self.cipher.encrypt(data) 
 
 class Decryptor(Cryptor):
 
     def __init__(self, path, outname, create, **kwargs):
         super().__init__(path, outname, create, **kwargs)
         self.data = self.read_data() 
-        self.shape = self.read_shape()
+        #self.shape = self.read_shape(kwargs.get('shape_file'))
         self.dec_data = self._decrypt()
-        
+
     def __call__(self):
         return self._get_numpy()
 
-    def read_shape(self):
+    def read_shape(self, path: str) -> None:
+        infile = open(path, 'rb')
+        data = infile.read()
+        infile.close()
+        return data
 
     def _decrypt(self):
         return self.cipher.decrypt(self.data)    
 
     def _get_numpy(self):
-       return np.frombuffer(self.dec_data, dtype = np.uint8).reshape(443, 712, 4)
+       return np.frombuffer(self.dec_data, dtype = np.uint8)

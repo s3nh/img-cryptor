@@ -16,6 +16,7 @@ class Cryptor(object):
     def __init__(self, path : str, outname : str , create: bool = True, **kwargs):
         self.path = path 
         self.outname = outname
+        print(kwargs.items())
         if create:
             self._key, self._iv = self.initialize_keys()
         else:
@@ -39,8 +40,8 @@ class Cryptor(object):
             Shape of processed image.
         """
         in_data = np.asarray( Image.open(self.path) )
-        print(in_data.shape)
-        return in_data.tobytes(order = 'C')
+        _shape = in_data.shape
+        return in_data.tobytes(order = 'C'), _shape
 
     def read_data(self):
         """
@@ -83,8 +84,8 @@ class Cryptor(object):
 
 class Encryptor(Cryptor):
     def __init__(self, path, outname, create, **kwargs):
-        super().__init__(path, outname, create)
-        self.data = self.read_image()
+        super().__init__(path, outname, create, **kwargs)
+        self.data, self.shape = self.read_image()
         self.enc_data = self._encrypt()
 
     def __call__(self):
@@ -96,12 +97,15 @@ class Encryptor(Cryptor):
 class Decryptor(Cryptor):
 
     def __init__(self, path, outname, create, **kwargs):
-        super().__init__(path, outname, create)
+        super().__init__(path, outname, create, **kwargs)
         self.data = self.read_data() 
+        self.shape = self.read_shape()
         self.dec_data = self._decrypt()
-
+        
     def __call__(self):
         return self._get_numpy()
+
+    def read_shape(self):
 
     def _decrypt(self):
         return self.cipher.decrypt(self.data)    

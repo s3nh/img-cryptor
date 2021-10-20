@@ -11,10 +11,11 @@ def main():
     enc = Encryptor(path = 'example/test.png', outname = 'example/enc_test', create = False , _key = 'keys/_key.bin', _iv = 'keys/_iv.bin')
     enc();
     print(enc.shape)
-    dec = Decryptor(path = 'example/enc_test', outname = 'example/test_enc.png', create = False, _key = 'keys/_key.bin', _iv = 'keys/_iv.bin')
-    res = dec()
-    resimg = Image.fromarray(res)
-    resimg.save('example/test_enc.png')
+    dec = Decryptor(path = 'example/enc_test', outname = 'example/test_enc', create = False, _key = 'keys/_key.bin', _iv = 'keys/_iv.bin')
+    dec()
+    print(dec.dec_shape)
+    #resimg = Image.fromarray(res)
+    #resimg.save('example/test_enc.png')
 
 if __name__.__contains__("__main__"):
     main()

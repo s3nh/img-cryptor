@@ -90,8 +90,8 @@ class Encryptor(Cryptor):
         self.enc_shape = self._encrypt(data = self.shape)
 
     def __call__(self):
-        self.save_cryptedata(input_file = self.data, filename = self.outname) 
-        self.save_cryptedata(input_file = self.shape, filename = self.outname + '_shape')
+        self.save_cryptedata(input_file = self.enc_data, filename = self.outname) 
+        self.save_cryptedata(input_file = self.enc_shape, filename = self.outname + '_shape')
 
     def save_cryptedata(self, input_file: Any, filename: str):
         encfile = open(filename, 'wb')
@@ -110,7 +110,9 @@ class Decryptor(Cryptor):
         self.data =  self.load_cryptedata(filename = self.path) 
         self.shape = self.load_cryptedata(filename = self.path + '_shape')
         self.dec_data = self._decrypt(self.data)
+        self.dec_numpy  = self._get_numpy()
         self.dec_shape = np.frombuffer(self._decrypt(self.shape), dtype = np.uint8)
+        self.save_data(input_file = self.dec_numpy, filename = self.outname)
         print(f"Decrypted file shape :{self.dec_shape}")
 
     def load_cryptedata(self,filename: Union[str, Path]) -> None:
@@ -122,5 +124,10 @@ class Decryptor(Cryptor):
     def _decrypt(self, file: Any):
         return self.cipher.decrypt(file)    
 
+    def save_data(self, input_file: Any, filename: str):
+        file = open(filename, 'wb')
+        file.write(input_file)
+        file.close()
+
     def _get_numpy(self):
-       return np.frombuffer(self.dec_data, dtype = np.uint8)
+       return np.frombuffer(self.dec_data, dtype = np.uint8).reshape((443, 712, 4))

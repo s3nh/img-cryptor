@@ -85,7 +85,6 @@ class Encryptor(Cryptor):
     def __init__(self, path, outname, create, **kwargs):
         super().__init__(path, outname, create, **kwargs)
         self.data, self.shape = self.read_image()
-        print(self.shape)
         self.enc_data = self._encrypt(data = self.data)
         self.enc_shape = self._encrypt(data = self.shape)
 

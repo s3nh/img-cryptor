@@ -10,9 +10,60 @@ from ..utils.utils import read_key
 
 Rd = TypeVar('Rd')
 
+class Cryptix(object):
+
+    def __init__(self, create: bool, algname: str = 'AES'):
+        self.create = create
+        self.cipher = self.create_cipher(algname = algname)
+
+    def __call__(self):
+        if self.create:
+            _key, _v = self._init_keys()
+
+    def load_input(self, path: str):
+        return Image.open(path)
+
+    def _init_keys(self) -> Union[Rd, Rd]:
+        """Initialize key and value instance
+        """
+        _key = Random.new().read(AES.block_size)
+        _iv = Random.new().read(AES.block_size)
+        return _key, _iv
+
+    def get_cipher(self, algname: str = 'AES'):
+        return getattr(Crypto.Cipher, algname)
+
+    def create_cipher(self, algname : str = 'AES'):
+        """Create new cipher
+           with predefined algorithm name.
+
+        Params
+        ----------
+
+        algo: str
+            Algorithm name (#TODO list it)
+
+        Returns
+        ----------
+        _cipher: Any
+        """
+        _cipher: Any = self.get_cipher(algname = algname)
+        return _cipher
+
+    def encrypt(self, file: Image, filesize : Tuple):
+        return self.cipher.encrypt(file, filesize)
+
+    def decrypt(self, file: Any):
+        return self.cipher.decrypt(file)
+
+    def _np_trans(self, file: Any, filesize: tuple):
+        return np.frombuffer(file, dtype = np.uint8).reshape(filesize)
+
+
 class Cryptor(object):
 
-    def __init__(self, path : str, outname : str , create: bool = True, **kwargs):
+
+    def __init__(self, ):
         self.path = path 
         self.outname = outname
         print(kwargs.items())

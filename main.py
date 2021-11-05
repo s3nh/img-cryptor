@@ -2,20 +2,17 @@ import matplotlib.pyplot as plt
 import argparse
 import os 
 
-from img_cryptor.src.cryptor import Encryptor
-from img_cryptor.src.cryptor import Decryptor
+from img_cryptor.src.cryptix import Cryptix 
 from PIL import Image
 
 def main():
 
-    enc = Encryptor(path = 'example/test.png', outname = 'example/enc_test', create = False , _key = 'keys/_key.bin', _iv = 'keys/_iv.bin')
-    enc();
-    print(enc.shape)
-    dec = Decryptor(path = 'example/enc_test', outname = 'example/test_enc', create = False, _key = 'keys/_key.bin', _iv = 'keys/_iv.bin')
-    dec()
-    print(dec.dec_shape)
-    #resimg = Image.fromarray(res)
-    #resimg.save('example/test_enc.png')
+    PATH: str = 'example/test.png'
+    crx = Cryptix(create= True, algname = 'AES')
+    print(crx)
+    _img = crx.load_input(path = PATH)
+    print(_img)
+
 
 if __name__.__contains__("__main__"):
     main()

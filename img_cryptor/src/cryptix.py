@@ -10,25 +10,39 @@ from ..utils.utils import read_key
 
 Rd = TypeVar('Rd')
 
-class Cryptix(object):
+
+class CryptixInit(object):
 
     def __init__(self, create: bool, algname: str = 'AES'):
         self.create = create
+        self.algname = algname
+
+    def _init_keys(self) -> Union[Rd, Rd]:
+        _key = Random.new().read(AES.block_size)
+        _iv = Random.new().read(AES.block_size)
+    return _key, _iv
+
+class Cryptix(object):
+
+    def __init__(self, algname: str = 'AES'):
+        self.create = create
         self.cipher = self.create_cipher(algname = algname)
 
-    def __call__(self):
-        if self.create:
-            _key, _v = self._init_keys()
+    def load_object(self, path: str):
+        _file = open(path, 'wb')
+        data = _file.read()
+        _file.close()
+        return data
+
+    def write_object(self, path: str, data: Any):
+        outfile = open(path, 'wb')
+        outifle.write(data)
+        outfile.close()
 
     def load_input(self, path: str):
         _img = Image.open(path)
         _imsize = _img.size
         return np.array(_img), _imsize
-
-    def _init_keys(self) -> Union[Rd, Rd]:
-        _key = Random.new().read(AES.block_size)
-        _iv = Random.new().read(AES.block_size)
-        return _key, _iv
 
     def get_cipher(self, algname: str = 'AES'):
         return getattr(Crypto.Cipher, algname)

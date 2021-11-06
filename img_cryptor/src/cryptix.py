@@ -11,11 +11,22 @@ from ..utils.utils import read_key
 Rd = TypeVar('Rd')
 
 
+class CFG:
+    key_outpath: str = 'outpath/key.bin'
+    value_outpath: str = 'outpath/value.bin'
+
 class CryptixInit(object):
 
     def __init__(self, create: bool, algname: str = 'AES'):
+        self.config = CFG()
         self.create = create
         self.algname = algname
+
+    def get_config(self):
+        return dir(self.config)
+
+    def __call__(self):
+        _key, _iv = self._init_keys()
 
     def _init_keys(self) -> Union[Rd, Rd]:
         _key = Random.new().read(AES.block_size)

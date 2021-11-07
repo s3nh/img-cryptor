@@ -10,6 +10,16 @@ from ..utils.utils import read_key
 
 Rd = TypeVar('Rd')
 
+def load_object(path: str):
+    _file = open(path, 'rb')
+    data = _file.read()
+    _file.close()
+    return data
+
+def write_object(data: Any, path):
+    outfile = open(path, 'wb')
+    outfile.write(data)
+    outfile.close()
 
 class CFG:
     key_outpath: str = 'outpath/key.bin'
@@ -26,31 +36,29 @@ class CryptixInit(object):
         return dir(self.config)
 
     def __call__(self):
-        _key, _iv = self._init_keys()
+        _key, _value = self._init_keys()
+        write_object(_key, CFG.key_outpath)
+        write_object(_value, CFG.value_outpath)
 
     def _init_keys(self) -> Union[Rd, Rd]:
         _key = Random.new().read(AES.block_size)
         _iv = Random.new().read(AES.block_size)
-    return _key, _iv
+        return _key, _iv
 
 class Cryptix(object):
 
     def __init__(self, algname: str = 'AES'):
-        self.create = create
+        #self._key = self.load_object(path = CFG.key_outpath)
+        #self._iv = self.load_object(path = CFG.value_outpath)
         self.cipher = self.create_cipher(algname = algname)
 
-    def load_object(self, path: str):
-        _file = open(path, 'wb')
-        data = _file.read()
-        _file.close()
-        return data
+    def __call__(self, path: str):
+        input = self.load_input(path = path)
 
-    def write_object(self, path: str, data: Any):
-        outfile = open(path, 'wb')
-        outifle.write(data)
-        outfile.close()
-
+     
     def load_input(self, path: str):
+        """
+        """
         _img = Image.open(path)
         _imsize = _img.size
         return np.array(_img), _imsize
@@ -72,8 +80,10 @@ class Cryptix(object):
         ----------
         _cipher: Any
         """
+        self.key = load_object(CFG.key_outpath)
+        self.value = load_object(CFG.value_outpath)
         attr_cipher: Any = self.get_cipher(algname = algname)
-        _cipher = attr_cipher.new(self._key, AES.MODE_CFB, self._iv)
+        _cipher = attr_cipher.new(self.key, AES.MODE_CFB, self.value)
         return _cipher
 
     def encrypt(self, file: np.ndarray, filesize : Tuple):

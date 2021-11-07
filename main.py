@@ -17,12 +17,9 @@ def main():
     crx = Cryptix(algname = 'AES')
     print(crx.cipher)
     #We have that fucnking cyphers  and now just wanted to create
-    
-    print(crx.key)
-    print(crx.value)
-    # _img = crx.load_input(path = PATH)
-    #print(_img)
-
+    # How to initialize 
+    ENCR_FILEPATH: str = 'example/test.png'
+    crx.encrypt(filepath = ENCR_FILEPATH)
 
 if __name__.__contains__("__main__"):
     main()

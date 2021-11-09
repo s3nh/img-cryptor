@@ -112,9 +112,9 @@ class Cryptix(object):
             Tuple which consist information about the image and its size. 
         """
         _img = Image.open(path)
-        _imsize = _img.size
-        print(np.asarray(_imsize))
-        return np.array(_img).tobytes(order = 'C'), np.asarray(_imsize).tobytes(order = 'C')
+        print(_img.size)
+        _imsize = np.array((_img.size[0], _img.size[1]))
+        return np.array(_img).tobytes(order = 'C'), _imsize.tobytes(order = 'C')
 
     def get_cipher(self, algname: str = 'AES'):
         """Load specific algorithm from Crypto, 
@@ -144,7 +144,6 @@ class Cryptix(object):
 
     def encrypt(self, filepath: str):
         _input, _input_size = self.load_input(path = filepath)
-        print(_input_size)
         self.encr_input  = self.cipher.encrypt(_input)  
         self.encr_input_size = self.cipher.encrypt(_input_size)
         return self.encr_input, self.encr_input_size

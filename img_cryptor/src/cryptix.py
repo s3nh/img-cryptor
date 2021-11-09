@@ -113,12 +113,12 @@ class Cryptix(object):
         """
         _img = Image.open(path)
         _imsize = _img.size
-        return np.array(_img).tobytes(order = 'C'), np.asarray(_imsize.tobytes(order = 'C')
+        print(np.asarray(_imsize))
+        return np.array(_img).tobytes(order = 'C'), np.asarray(_imsize).tobytes(order = 'C')
 
     def get_cipher(self, algname: str = 'AES'):
         """Load specific algorithm from Crypto, 
             based on its name.
-
         """
         return getattr(Crypto.Cipher, algname)
 
@@ -144,10 +144,10 @@ class Cryptix(object):
 
     def encrypt(self, filepath: str):
         _input, _input_size = self.load_input(path = filepath)
+        print(_input_size)
         self.encr_input  = self.cipher.encrypt(_input)  
         self.encr_input_size = self.cipher.encrypt(_input_size)
         return self.encr_input, self.encr_input_size
-
 
     def decrypt(self, file: Any):
         return self.cipher.decrypt(file)
